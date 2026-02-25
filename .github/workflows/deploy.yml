@@ -22,11 +22,14 @@ jobs:
     - name: Setup Hugo
       uses: peaceiris/actions-hugo@v3
       with:
-        hugo-version: 'latest'
+        hugo-version: '0.156.0'
         extended: true
 
     - name: Build
-      run: hugo --minify
+      run: |
+        cd mydocs
+        hugo --minify
+        ls -la public/
 
     - name: Deploy to Cloudflare Pages
       if: github.ref == 'refs/heads/main'
@@ -35,5 +38,5 @@ jobs:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         projectName: interview-questions
-        directory: public
+        directory: mydocs/public
         gitHubToken: ${{ secrets.GITHUB_TOKEN }}
