@@ -19,6 +19,12 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
+    - name: Debug directory structure
+      run: |
+        pwd
+        ls -la
+        ls -la mydocs || echo "mydocs not found"
+
     - name: Setup Hugo
       uses: peaceiris/actions-hugo@v3
       with:
@@ -26,8 +32,9 @@ jobs:
         extended: true
 
     - name: Build
-      working-directory: mydocs
-      run: hugo --minify
+      run: |
+        cd mydocs
+        hugo --minify
 
     - name: Deploy to Cloudflare Pages
       if: github.ref == 'refs/heads/main'
