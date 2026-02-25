@@ -11,9 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./mydocs
     
     steps:
     - name: Checkout
@@ -29,6 +26,7 @@ jobs:
         extended: true
 
     - name: Build
+      working-directory: mydocs
       run: hugo --minify
 
     - name: Deploy to Cloudflare Pages
