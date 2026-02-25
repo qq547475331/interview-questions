@@ -1,0 +1,58 @@
+baseURL = 'https://your-site.pages.dev/'
+title = '面试题库'
+theme = 'hugo-book'
+defaultContentLanguage = 'zh'
+languageCode = 'zh-CN'
+
+# Book configuration
+disablePathToLower = true
+enableGitInfo = true
+
+# Needed for mermaid/katex shortcodes
+[markup]
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.tableOfContents]
+  startLevel = 1
+
+[markup.highlight]
+  style = 'base16-snazzy'
+
+[languages]
+[languages.zh]
+  languageName = '中文'
+  weight = 1
+  contentDir = 'content'
+
+[menu]
+[[menu.after]]
+  name = 'GitHub'
+  url = 'https://github.com/your-username/your-repo/'
+  weight = 10
+
+[params]
+  # 主题设置: light, dark 或 auto
+  BookTheme = 'auto'
+
+  # 启用目录
+  BookToC = true
+
+  # 指定文档目录
+  BookSection = 'docs'
+
+  # 启用搜索
+  BookSearch = true
+
+  # 日期格式
+  BookDateFormat = '2006年1月2日'
+
+  # 编辑链接模板
+  BookRepo = 'https://github.com/your-username/your-repo/'
+  BookEditLink = '{{ .Site.Params.BookRepo }}/edit/main/{{ .Path }}'
+
+  # 最后修改链接
+  BookLastChangeLink = '{{ .Site.Params.BookRepo }}/commit/{{ .GitInfo.Hash }}'
+
+  # 启用便携链接检查
+  BookPortableLinks = 'warning'
