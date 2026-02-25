@@ -1,5 +1,5 @@
 # Generated files by hugo
-/public/
+# /public/  # 注释掉，因为我们想提交构建后的静态文件
 /resources/_gen/
 /assets/jsconfig.json
 hugo_stats.json

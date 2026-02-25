@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>算法与数据结构 on 面试题库</title><link>https://your-site.pages.dev/docs/algorithm/</link><description>Recent content in 算法与数据结构 on 面试题库</description><generator>Hugo</generator><language>zh-CN</language><atom:link href="https://your-site.pages.dev/docs/algorithm/index.xml" rel="self" type="application/rss+xml"/><item><title>数组与链表</title><link>https://your-site.pages.dev/docs/algorithm/array-linkedlist/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://your-site.pages.dev/docs/algorithm/array-linkedlist/</guid><description>&lt;h1 id="数组与链表面试题"&gt;数组与链表面试题&lt;a class="anchor" href="#%e6%95%b0%e7%bb%84%e4%b8%8e%e9%93%be%e8%a1%a8%e9%9d%a2%e8%af%95%e9%a2%98"&gt;#&lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id="1-两数之和"&gt;1. 两数之和&lt;a class="anchor" href="#1-%e4%b8%a4%e6%95%b0%e4%b9%8b%e5%92%8c"&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;问题：&lt;/strong&gt; 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出和为目标值 target 的那两个整数，并返回它们的数组下标。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;输入：nums = [2,7,11,15], target = 9
+输出：[0,1]
+解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;答案：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff6ac1"&gt;def&lt;/span&gt; &lt;span style="color:#57c7ff"&gt;twoSum&lt;/span&gt;(nums, target):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; hash_map &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;for&lt;/span&gt; i, num &lt;span style="color:#ff6ac1"&gt;in&lt;/span&gt; &lt;span style="color:#ff5c57"&gt;enumerate&lt;/span&gt;(nums):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; complement &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; target &lt;span style="color:#ff6ac1"&gt;-&lt;/span&gt; num
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;if&lt;/span&gt; complement &lt;span style="color:#ff6ac1"&gt;in&lt;/span&gt; hash_map:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;return&lt;/span&gt; [hash_map[complement], i]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; hash_map[num] &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; i
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;return&lt;/span&gt; []&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;复杂度分析：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;时间复杂度：O(n)&lt;/li&gt;
+&lt;li&gt;空间复杂度：O(n)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="2-反转链表"&gt;2. 反转链表&lt;a class="anchor" href="#2-%e5%8f%8d%e8%bd%ac%e9%93%be%e8%a1%a8"&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;问题：&lt;/strong&gt; 给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;答案：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff6ac1"&gt;class&lt;/span&gt; &lt;span style="color:#f3f99d"&gt;ListNode&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;def&lt;/span&gt; &lt;span style="color:#57c7ff"&gt;__init__&lt;/span&gt;(&lt;span style="color:#ff5c57"&gt;self&lt;/span&gt;, val&lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt;&lt;span style="color:#ff9f43"&gt;0&lt;/span&gt;, &lt;span style="color:#ff5c57"&gt;next&lt;/span&gt;&lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt;&lt;span style="color:#ff6ac1"&gt;None&lt;/span&gt;):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff5c57"&gt;self&lt;/span&gt;&lt;span style="color:#ff6ac1"&gt;.&lt;/span&gt;val &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; val
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff5c57"&gt;self&lt;/span&gt;&lt;span style="color:#ff6ac1"&gt;.&lt;/span&gt;next &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; &lt;span style="color:#ff5c57"&gt;next&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff6ac1"&gt;def&lt;/span&gt; &lt;span style="color:#57c7ff"&gt;reverseList&lt;/span&gt;(head):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; prev &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; &lt;span style="color:#ff6ac1"&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; curr &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; head
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;while&lt;/span&gt; curr:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; next_temp &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; curr&lt;span style="color:#ff6ac1"&gt;.&lt;/span&gt;next
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; curr&lt;span style="color:#ff6ac1"&gt;.&lt;/span&gt;next &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; prev
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; prev &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; curr
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; curr &lt;span style="color:#ff6ac1"&gt;=&lt;/span&gt; next_temp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff6ac1"&gt;return&lt;/span&gt; prev&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;复杂度分析：&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>
