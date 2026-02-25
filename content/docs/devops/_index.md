@@ -1,6 +1,6 @@
 ---
 title: 运维与DevOps
-weight: 60
+weight: 1
 ---
 
 # 运维与DevOps面试题
