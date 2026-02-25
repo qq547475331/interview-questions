@@ -35,7 +35,7 @@ mydocs/
 
 1. 克隆仓库（包含子模块）
 ```bash
-git clone --recursive https://github.com/your-username/your-repo.git
+git clone --recursive https://github.com/qq547475331/interview-questions.git
 cd your-repo
 ```
 

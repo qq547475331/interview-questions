@@ -28,7 +28,7 @@ enableGitInfo = true
 [menu]
 [[menu.after]]
   name = 'GitHub'
-  url = 'https://github.com/your-username/your-repo/'
+  url = 'https://github.com/qq547475331/interview-questions'
   weight = 10
 
 [params]
@@ -48,7 +48,7 @@ enableGitInfo = true
   BookDateFormat = '2006年1月2日'
 
   # 编辑链接模板
-  BookRepo = 'https://github.com/your-username/your-repo/'
+  BookRepo = 'https://github.com/qq547475331/interview-questions'
   BookEditLink = '{{ .Site.Params.BookRepo }}/edit/main/{{ .Path }}'
 
   # 最后修改链接
