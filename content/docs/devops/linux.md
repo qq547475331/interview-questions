@@ -313,3 +313,122 @@ grep -rl "keyword" /path/to/search  # 只显示文件名
 find . -name "*.py" -o -name "*.js" | xargs wc -l
 cloc .  # 使用 cloc 工具
 ```
+
+---
+
+## 9. Linux 内核与系统调优
+
+**问题：** 请解释 `net.ipv4.tcp_tw_reuse` 和 `tcp_fin_timeout` 在高并发场景下的作用。
+
+**答案：**
+
+**TCP 连接状态：**
+- `TIME_WAIT`：连接关闭后等待 2MSL（通常 60秒）
+- 高并发场景下，大量短连接会导致 `TIME_WAIT` 状态堆积
+
+**内核参数作用：**
+
+```bash
+# 允许重用 TIME_WAIT 状态的连接
+net.ipv4.tcp_tw_reuse = 1
+
+# 缩短 TIME_WAIT 等待时间（默认60秒）
+net.ipv4.tcp_fin_timeout = 30
+
+# 其他高并发优化参数
+net.ipv4.tcp_tw_recycle = 0      # 已废弃，不建议使用
+net.ipv4.tcp_max_tw_buckets = 5000  # TIME_WAIT 最大数量
+net.core.somaxconn = 65535       # 监听队列长度
+net.ipv4.tcp_max_syn_backlog = 65535  # SYN 队列长度
+```
+
+**注意事项：**
+- `tcp_tw_reuse` 只对客户端（出站连接）有效
+- `tcp_tw_recycle` 在 NAT 环境下有问题，已废弃
+
+---
+
+## 10. IO 性能问题定位
+
+**问题：** 当 `top` 显示 CPU `iowait` 极高，但 CPU 使用率不高时，你会如何定位问题？
+
+**答案：**
+
+**排查工具链：**
+
+```bash
+# 1. 确认 IO 瓶颈
+iostat -x 1 10
+# 关注：%util（接近100%表示饱和）、await（等待时间）
+
+# 2. 定位具体进程
+iotop -o -b -n 5
+pidstat -d 1
+
+# 3. 分析磁盘请求
+blktrace -d /dev/sda -o - | blkparse -i -
+
+# 4. 文件系统层面
+df -i  # 检查 inode 使用率
+lsof +D /path  # 查看目录被哪些进程访问
+
+# 5. 深度分析
+strace -e trace=open,read,write -p PID
+perf record -g -a sleep 10
+```
+
+**常见原因：**
+- 磁盘硬件故障或老化
+- 文件系统损坏（需要 fsck）
+- 日志写入过于频繁
+- 内存不足导致频繁 swap
+
+---
+
+## 11. 僵尸进程与孤儿进程
+
+**问题：** 简述僵尸进程（Zombie）与孤儿进程（Orphan）的区别。如果系统中出现大量僵尸进程，除了杀掉父进程，还有什么办法清理？
+
+**答案：**
+
+**区别：**
+
+| 类型 | 定义 | 状态 | 危害 |
+|------|------|------|------|
+| **孤儿进程** | 父进程退出，子进程仍在运行 | 被 init/systemd 接管 | 无危害 |
+| **僵尸进程** | 子进程退出，父进程未回收 | `Z` 状态 | 占用 PID，可能导致资源耗尽 |
+
+**僵尸进程产生原因：**
+- 父进程未调用 `wait()`/`waitpid()` 回收子进程
+- 父进程长期运行不退出
+
+**清理方法：**
+
+```bash
+# 1. 查找僵尸进程
+ps aux | grep 'Z'
+ps -eo pid,ppid,stat,cmd | grep -w Z
+
+# 2. 方法1：杀死父进程（最简单）
+kill -9 <parent_pid>
+
+# 3. 方法2：发送 SIGCHLD 信号给父进程
+kill -s SIGCHLD <parent_pid>
+
+# 4. 方法3：使用 gdb  attach 到父进程并调用 wait()
+gdb -p <parent_pid>
+(gdb) call waitpid(-1, 0, 0)
+(gdb) detach
+
+# 5. 方法4：如果父进程是 systemd，重启服务
+systemctl restart <service>
+
+# 6. 预防：设置 SIGCHLD 信号处理
+# 在父进程代码中：
+# signal(SIGCHLD, SIG_IGN);  # 忽略子进程退出信号
+```
+
+**预防措施：**
+- 父进程正确处理 `SIGCHLD` 信号
+- 使用 `sigaction` 设置信号处理函数
+- 使用 `double fork` 技巧避免僵尸进程

@@ -332,3 +332,103 @@ Docker 架构：
 │           Host OS                   │
 └─────────────────────────────────────┘
 ```
+
+---
+
+## 9. Docker 底层隔离机制
+
+**问题：** Docker 容器是如何通过 Namespace 和 Cgroups 实现资源隔离和限制的？如果 Cgroups 限制了 2G 内存，Java 应用在容器内看到的是多大？
+
+**答案：**
+
+**Namespace（命名空间）- 实现隔离：**
+
+| Namespace | 隔离资源 | 说明 |
+|-----------|----------|------|
+| **PID** | 进程 ID | 容器内 PID 从 1 开始 |
+| **NET** | 网络 | 独立的网络接口、IP、端口 |
+| **IPC** | 进程间通信 | 独立的共享内存、信号量 |
+| **MNT** | 挂载点 | 独立的文件系统视图 |
+| **UTS** | 主机名/域名 | 独立的主机名 |
+| **USER** | 用户/组 | 容器内可以是 root，宿主机是普通用户 |
+
+```bash
+# 查看进程的 Namespace
+ls -l /proc/<pid>/ns/
+```
+
+**Cgroups（控制组）- 实现资源限制：**
+
+| 子系统 | 限制资源 |
+|--------|----------|
+| **cpu** | CPU 使用率 |
+| **memory** | 内存使用 |
+| **blkio** | 块设备 IO |
+| **pids** | 进程数量 |
+| **devices** | 设备访问 |
+
+```bash
+# 查看容器的 Cgroups 配置
+cat /sys/fs/cgroup/memory/docker/<container_id>/memory.limit_in_bytes
+```
+
+**Java 内存问题：**
+
+如果 Cgroups 限制 2G 内存，**旧版 Java（JDK 8u131 之前）会看到宿主机全部内存**，可能导致 OOM。
+
+**解决方案：**
+```bash
+# 1. 使用新版 JDK（JDK 8u191+ 或 JDK 11+）
+# 自动识别容器内存限制
+
+# 2. 手动设置 JVM 内存
+java -Xmx1g -Xms1g -XX:+UseContainerSupport myapp
+
+# 3. 使用 -XX:MaxRAMPercentage
+java -XX:MaxRAMPercentage=75.0 myapp  # 使用容器内存的 75%
+```
+
+---
+
+## 10. Docker 网络故障排查
+
+**问题：** 容器无法访问外网或容器间无法通信，如何排查？
+
+**答案：**
+
+**排查步骤：**
+
+```bash
+# 1. 查看容器网络配置
+docker inspect <container_id> | grep -A 20 NetworkSettings
+
+# 2. 检查容器内部网络
+docker exec -it <container> ip addr
+docker exec -it <container> ip route
+
+# 3. 测试网络连通性
+docker exec -it <container> ping 8.8.8.8
+docker exec -it <container> nslookup baidu.com
+
+# 4. 检查 Docker 网络
+docker network ls
+docker network inspect <network_name>
+
+# 5. 检查防火墙和 iptables
+iptables -t nat -L -n | grep DOCKER
+iptables -t filter -L -n | grep DOCKER
+
+# 6. 检查 DNS 配置
+cat /etc/docker/daemon.json
+# 可配置 DNS：{"dns": ["8.8.8.8", "114.114.114.114"]}
+
+# 7. 重启 Docker 网络
+systemctl restart docker
+# 或
+docker network prune  # 清理未使用的网络
+```
+
+**常见问题：**
+- **容器无法访问外网**：检查 NAT 规则、DNS 配置
+- **容器间无法通信**：检查是否在同一个网络、防火墙规则
+- **端口映射失败**：检查端口是否被占用、iptables 规则

@@ -186,3 +186,110 @@ redis-cli --memkeys
 # 慢查询
 slowlog get 10
 ```
+
+---
+
+## 6. Redis 架构对比与热点 Key
+
+**问题：** 请对比 Redis Sentinel（哨兵）和 Redis Cluster（集群）的适用场景。Cluster 模式下如何处理"热点 Key"问题？
+
+**答案：**
+
+**Sentinel vs Cluster：**
+
+| 特性 | Sentinel | Cluster |
+|------|----------|---------|
+| **架构** | 主从复制 + 哨兵监控 | 分片集群 |
+| **数据分片** | 不支持 | 支持（16384 个槽） |
+| **容量** | 受单机内存限制 | 可水平扩展 |
+| **写入性能** | 单机写入 | 多节点写入 |
+| **故障转移** | 自动 | 自动 |
+| **适用场景** | 数据量小、高可用 | 大数据量、高并发 |
+
+**适用场景：**
+- **Sentinel**：缓存数据 < 100GB，读多写少，需要高可用
+- **Cluster**：缓存数据 > 100GB，写入量大，需要水平扩展
+
+**热点 Key 问题：**
+
+现象：某个 Key 被频繁访问，导致单个节点负载过高。
+
+**解决方案：**
+
+1. **本地缓存 + Redis**
+   ```java
+   // 本地缓存（Caffeine/Guava）+ Redis
+   @Cacheable(value = "hotKey", key = "#id")
+   public String getData(String id) {
+       return redisTemplate.opsForValue().get(id);
+   }
+   ```
+
+2. **Key 拆分**
+   ```
+   原 Key: user:1001
+   拆分为: user:1001:0, user:1001:1, user:1001:2
+   读取时随机选择一个
+   ```
+
+3. **读写分离**
+   - 从节点分担读压力
+   - 但主从同步有延迟
+
+4. **使用 Proxy 层**
+   ```
+   Codis/Twemproxy 可以在代理层做热点 Key 监控和缓存
+   ```
+
+---
+
+## 7. Redis 持久化灾难恢复
+
+**问题：** 如果 Redis 同时开启 AOF 和 RDB，重启时会加载哪个文件？为什么？
+
+**答案：**
+
+**加载优先级：**
+
+1. **AOF 优先级高于 RDB**
+   - 如果 AOF 开启且文件存在，优先加载 AOF
+   - 因为 AOF 数据更完整（记录每条写命令）
+
+2. **加载逻辑：**
+   ```
+   启动时：
+   1. 检查 AOF 是否开启
+   2. 如果开启且 AOF 文件存在 → 加载 AOF
+   3. 否则 → 加载 RDB
+   ```
+
+**原因：**
+- AOF 是追加写入，数据更实时
+- RDB 是快照，可能丢失最后一次快照后的数据
+- AOF 可以通过 `bgrewriteaof` 压缩
+
+**灾难恢复场景：**
+
+```bash
+# 场景1：AOF 文件损坏
+# 使用 redis-check-aof 修复
+redis-check-aof --fix appendonly.aof
+
+# 场景2：AOF 和 RDB 都损坏
+# 从备份恢复，或清空数据重启
+
+# 场景3：需要恢复到某个时间点
+# 使用 RDB 历史备份 + AOF 增量
+```
+
+**最佳实践：**
+```bash
+# 同时开启 RDB 和 AOF
+save 900 1
+appendonly yes
+appendfsync everysec
+
+# 定期备份
+cp /var/lib/redis/dump.rdb /backup/redis/dump-$(date +%Y%m%d).rdb
+cp /var/lib/redis/appendonly.aof /backup/redis/aof-$(date +%Y%m%d).aof
+```
